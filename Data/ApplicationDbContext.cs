@@ -15,6 +15,10 @@ namespace ConesOfAmazonshire.Data
         {
         }
 
+        public DbSet<BoardGame> BoardGames { get; set; }
+        public DbSet<ApplicationUser> Gebruikers { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

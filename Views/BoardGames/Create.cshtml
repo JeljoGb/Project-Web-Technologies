@@ -1,0 +1,73 @@
+﻿@model ConesOfAmazonshire.Models.CreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>BoardGame</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BoardGame.Title" class="control-label"></label>
+                <input asp-for="BoardGame.Title" class="form-control" required />
+                <span asp-validation-for="BoardGame.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.Price" class="control-label"></label>
+                <input asp-for="BoardGame.Price" class="form-control" />
+                <span asp-validation-for="BoardGame.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.Condition" class="control-label"></label>
+                <input asp-for="BoardGame.Condition" class="form-control" />
+                <span asp-validation-for="BoardGame.Condition" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.Genre" class="control-label"></label>
+                <input asp-for="BoardGame.Genre" class="form-control" />
+                <span asp-validation-for="BoardGame.Genre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.Publisher" class="control-label"></label>
+                <input asp-for="BoardGame.Publisher" class="form-control" />
+                <span asp-validation-for="BoardGame.Publisher" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.User.Location" class="control-label"></label>
+                <input asp-for="BoardGame.User.Location" class="form-control" />
+                <span asp-validation-for="BoardGame.User.Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.Image" class="control-label"></label>
+                <input asp-for="BoardGame.Image" class="form-control" />
+                <span asp-validation-for="BoardGame.Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardGame.PurchaseDate" class="control-label"></label>
+                <input asp-for="BoardGame.PurchaseDate" class="form-control" />
+                <span asp-validation-for="BoardGame.PurchaseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <input asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

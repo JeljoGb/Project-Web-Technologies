@@ -27,14 +27,16 @@ namespace ConesOfAmazonshire
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
-            // Add application services.
+            
+            // Add application services
             services.AddTransient<IEmailSender, EmailSender>();
+
+            services.AddScoped<IBoardGameService, BoardGameService>();
 
             services.AddMvc();
         }
