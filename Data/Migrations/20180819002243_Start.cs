@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ConesOfAmazonshire.Data.Migrations
 {
-    public partial class NewStart : Migration
+    public partial class Start : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,6 +22,12 @@ namespace ConesOfAmazonshire.Data.Migrations
                 table: "AspNetRoles");
 
             migrationBuilder.AddColumn<string>(
+                name: "Discriminator",
+                table: "AspNetUsers",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<string>(
                 name: "FirstName",
                 table: "AspNetUsers",
                 nullable: true);
@@ -32,7 +38,27 @@ namespace ConesOfAmazonshire.Data.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "Location",
+                name: "LocationId",
+                table: "AspNetUsers",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "City",
+                table: "AspNetUsers",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Country",
+                table: "AspNetUsers",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "DoorNumber",
+                table: "AspNetUsers",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "StreetName",
                 table: "AspNetUsers",
                 nullable: true);
 
@@ -55,14 +81,13 @@ namespace ConesOfAmazonshire.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Condition = table.Column<string>(nullable: true),
+                    Condition = table.Column<int>(nullable: false),
                     Genre = table.Column<string>(nullable: true),
                     Image = table.Column<string>(nullable: true),
-                    Location = table.Column<string>(nullable: true),
-                    Price = table.Column<int>(nullable: true),
+                    Price = table.Column<int>(nullable: false),
                     Publisher = table.Column<string>(nullable: true),
                     PurchaseDate = table.Column<string>(nullable: true),
-                    Title = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(maxLength: 60, nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -75,6 +100,11 @@ namespace ConesOfAmazonshire.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_LocationId",
+                table: "AspNetUsers",
+                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -96,6 +126,14 @@ namespace ConesOfAmazonshire.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_AspNetUsers_LocationId",
+                table: "AspNetUsers",
+                column: "LocationId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                 table: "AspNetUserTokens",
                 column: "UserId",
@@ -107,11 +145,19 @@ namespace ConesOfAmazonshire.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUsers_AspNetUsers_LocationId",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                 table: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "BoardGames");
+
+            migrationBuilder.DropIndex(
+                name: "IX_AspNetUsers_LocationId",
+                table: "AspNetUsers");
 
             migrationBuilder.DropIndex(
                 name: "UserNameIndex",
@@ -122,6 +168,10 @@ namespace ConesOfAmazonshire.Data.Migrations
                 table: "AspNetRoles");
 
             migrationBuilder.DropColumn(
+                name: "Discriminator",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
                 name: "FirstName",
                 table: "AspNetUsers");
 
@@ -130,7 +180,23 @@ namespace ConesOfAmazonshire.Data.Migrations
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
-                name: "Location",
+                name: "LocationId",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "City",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "Country",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "DoorNumber",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "StreetName",
                 table: "AspNetUsers");
 
             //migrationBuilder.AlterColumn<int>(

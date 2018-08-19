@@ -9,7 +9,7 @@ namespace ConesOfAmazonshire.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public List<BoardGame> BoardGameList { get; set; }
-        public string Location { get; set; }
+        public Location Location { get; set; }
 
         //public List<BoardGame> WishList { get; set; }
     }

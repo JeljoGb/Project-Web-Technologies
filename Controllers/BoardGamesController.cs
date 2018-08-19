@@ -27,18 +27,57 @@ namespace ConesOfAmazonshire.Controllers
 
 
         // GET: BoardGames
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, string searchTitles, string searchLocations, string searchUsers, string boardGameGenre, Condition boardGameCondition, List<int?> boardGamePriceRange)
         {
 
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.PriceSortParm = sortOrder == "price_asc" ? "price_desc" : "price_asc";
+            ViewBag.ConditionSortParm = sortOrder == "condition_asc" ? "condition_desc" : "condition_asc";
+            ViewBag.GenreSortParm = sortOrder == "genre_asc" ? "genre_desc" : "genre_asc";
+            ViewBag.PublisherSortParm = sortOrder == "publisher_asc"  ? "publisher_desc" : "publisher_asc";
+            ViewBag.UserSortParm = sortOrder == "user_asc" ? "user_desc" : "user_asc";
+            ViewBag.LocationSortParm = sortOrder == "location_asc" ? "location_desc" : "location_asc";
+            ViewBag.PurchaseSortParm = sortOrder == "purchase_asc" ? "purchase_desc" : "purchase_asc";
+
+            IQueryable<string> genreQuery = from b in _context.BoardGames
+                                            orderby b.Genre
+                                            select b.Genre;
+            
+
             var boardGames = from b in _context.BoardGames
-                           select b;
+                             .Include(a => a.User)
+                             select b;
+
+            if (!String.IsNullOrEmpty(searchTitles))
+            {
+                boardGames = boardGames.Where(b => b.Title.Contains(searchTitles));
+            }
+
+            if (!String.IsNullOrEmpty(searchLocations))
+            {
+                boardGames = boardGames.Where(b => b.User.Location.ToString().Contains(searchLocations));
+            }
+
+            if (!String.IsNullOrEmpty(searchUsers))
+            {
+                boardGames = boardGames.Where(b => b.User.UserName.Contains(searchUsers));
+            }
+
+            if (!String.IsNullOrEmpty(boardGameGenre))
+            {
+                boardGames = boardGames.Where(x => x.Genre == boardGameGenre);
+            }
+
+            if (Enum.IsDefined(typeof(Condition), boardGameCondition))
+            {
+                boardGames = boardGames.Where(c => c.Condition == boardGameCondition);
+            }
+
+            if (boardGamePriceRange.Any())
+            {
+                boardGames = boardGames.Where(x => x.Price > (boardGamePriceRange[0] ?? 0) && x.Price < (boardGamePriceRange[1] ?? 1000));
+            }
+
             switch (sortOrder)
             {
                 case "title_desc":
@@ -47,24 +86,59 @@ namespace ConesOfAmazonshire.Controllers
                 case "price_desc":
                     boardGames = boardGames.OrderByDescending(b => b.Price);
                     break;
+                case "price_asc":
+                    boardGames = boardGames.OrderBy(b => b.Price);
+                    break;
+                case "condition_desc":
+                    boardGames = boardGames.OrderByDescending(b => b.Condition);
+                    break;
+                case "condition_asc":
+                    boardGames = boardGames.OrderBy(b => b.Condition);
+                    break;
+                case "genre_desc":
+                    boardGames = boardGames.OrderByDescending(b => b.Genre);
+                    break;
+                case "genre_asc":
+                    boardGames = boardGames.OrderBy(b => b.Genre);
+                    break;
                 case "publisher_desc":
                     boardGames = boardGames.OrderByDescending(b => b.Publisher);
+                    break;
+                case "publisher_asc":
+                    boardGames = boardGames.OrderBy(b => b.Publisher);
                     break;
                 case "user_desc":
                     boardGames = boardGames.OrderByDescending(b => b.User);
                     break;
-                case "Date":
-                    boardGames = boardGames.OrderBy(b => b.PurchaseDate);
+                case "user_asc":
+                    boardGames = boardGames.OrderBy(b => b.User);
                     break;
-                case "date_desc":
+                case "location_desc":
+                    boardGames = boardGames.OrderByDescending(b => b.User.Location);
+                    break;
+                case "location_asc":
+                    boardGames = boardGames.OrderBy(b => b.User.Location);
+                    break;
+                case "purchase_desc":
                     boardGames = boardGames.OrderByDescending(b => b.PurchaseDate);
+                    break;
+                case "purchase_asc":
+                    boardGames = boardGames.OrderBy(b => b.PurchaseDate);
                     break;
                 default:
                     boardGames = boardGames.OrderBy(b => b.Title);
                     break;
             }
 
-            return View(boardGames.ToList());
+            var boardGameQueryVM = new BoardGameQueryViewModel
+            {
+
+                genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                boardGames = await boardGames.ToListAsync(),
+                SearchTitles = searchTitles
+            };
+            
+            return View(boardGameQueryVM);
             //return View(await _context.BoardGames
             //    .Include(a => a.User)
             //    .ToListAsync());
@@ -80,6 +154,7 @@ namespace ConesOfAmazonshire.Controllers
 
             var boardGame = await _context.BoardGames
                 .Include(a => a.User)
+                .Include(b => b.User.Location)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (boardGame == null)
             {
@@ -95,11 +170,15 @@ namespace ConesOfAmazonshire.Controllers
         {
 
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var boardGame = new BoardGame();
-            boardGame.User = user;
-            var vm = new CreateViewModel();
-            vm.BoardGame = boardGame;
-            vm.UserId = user.Id;
+            var boardGame = new BoardGame
+            {
+                User = user
+            };
+            var vm = new CreateViewModel
+            {
+                BoardGame = boardGame,
+                UserId = user.Id
+            };
             return View(vm);
         }
 
@@ -113,7 +192,6 @@ namespace ConesOfAmazonshire.Controllers
             if (ModelState.IsValid)
             {
                 var boardGame = vm.BoardGame;
-
                 boardGame.Id = Guid.NewGuid();
                 var user = await _context.Users.SingleOrDefaultAsync(a => a.Id == vm.UserId);
                 boardGame.User = user;

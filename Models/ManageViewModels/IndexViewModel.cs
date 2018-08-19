@@ -21,5 +21,7 @@ namespace ConesOfAmazonshire.Models.ManageViewModels
         public string PhoneNumber { get; set; }
 
         public string StatusMessage { get; set; }
+
+        public Location Location { get; set; }
     }
 }

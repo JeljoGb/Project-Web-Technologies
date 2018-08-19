@@ -24,7 +24,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="BoardGame.Condition" class="control-label"></label>
-                <input asp-for="BoardGame.Condition" class="form-control" />
+                <select asp-for="BoardGame.Condition" asp-items="Html.GetEnumSelectList<Condition>()"></select>
                 <span asp-validation-for="BoardGame.Condition" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -37,7 +37,7 @@
                 <input asp-for="BoardGame.Publisher" class="form-control" />
                 <span asp-validation-for="BoardGame.Publisher" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="BoardGame.User.Location" class="control-label"></label>
                 <input asp-for="BoardGame.User.Location" class="form-control" />
                 <span asp-validation-for="BoardGame.User.Location" class="text-danger"></span>
@@ -52,7 +52,7 @@
                 <input asp-for="BoardGame.PurchaseDate" class="form-control" />
                 <span asp-validation-for="BoardGame.PurchaseDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="UserId" class="control-label"></label>
                 <input asp-for="UserId" class="form-control" />
                 <span asp-validation-for="UserId" class="text-danger"></span>

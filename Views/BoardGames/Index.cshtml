@@ -1,77 +1,129 @@
-﻿@model IEnumerable<ConesOfAmazonshire.Models.BoardGame>
+﻿@model ConesOfAmazonshire.Models.BoardGameQueryViewModel
+@inject UserManager<ApplicationUser> UserManager
+
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "BoardGames";
 }
 
-<h2>Index</h2>
+<h2>BoardGames</h2>
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="BoardGames" asp-action="Index" method="get">
+    <div>
+        <div>
+            <label asp-for="SearchTitles"></label>
+            <input asp-for="SearchTitles">
+
+            <label asp-for="SearchLocations"></label>
+            <input asp-for="SearchLocations">
+
+            <label asp-for="SearchUsers"></label>
+            <input asp-for="SearchUsers">
+        </div>
+        <div>
+            <label asp-for="BoardGamePriceRange">Price:</label>
+            <input asp-for="BoardGamePriceRange[0]" />
+            <label asp-for="BoardGamePriceRange">From - To</label>
+            <input asp-for="BoardGamePriceRange[1]" />
+        </div>
+
+        <div class="dropdown">
+            <label asp-for="BoardGameGenre"></label>
+            <select asp-for="BoardGameGenre" asp-items="Model.genres">
+                <option value="">All</option>
+            </select>
+
+            <label asp-for="BoardGameCondition"></label>
+            <select asp-for="BoardGameCondition" asp-items="Html.GetEnumSelectList<Condition>()">
+                <option value="">All</option>
+            </select>
+        </div>
+        <input type="submit" value="Filter" />
+    </div>
+</form>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.ActionLink("Title", "Index", new { sortOrder = ViewBag.NameSortParm})
+                @Html.ActionLink("Title", "Index", new { sortOrder = ViewBag.TitleSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.ActionLink("Price", "Index", new { sortOrder = ViewBag.PriceSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Condition)
+                @Html.ActionLink("Condition", "Index", new { sortOrder = ViewBag.ConditionSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Genre)
+                @Html.ActionLink("PurchaseDate", "Index", new { sortOrder = ViewBag.PurchaseSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Publisher)
+                @Html.ActionLink("Genre", "Index", new { sortOrder = ViewBag.GenreSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User.Location)
+                @Html.ActionLink("Publisher", "Index", new { sortOrder = ViewBag.PublisherSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+                @Html.DisplayNameFor(model => model.boardGames[0].Image)
             </th>
             <th>
-                @Html.ActionLink("PurchaseDate", "Index", new { sortOrder = ViewBag.DateSortParm })
+                @Html.ActionLink("Location", "Index", new { sortOrder = ViewBag.LocationSortParm })
+            <th>
+                @Html.ActionLink("User", "Index", new { sortOrder = ViewBag.UserSortParm })
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.boardGames)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Condition)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Genre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Publisher)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.Location)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Image)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PurchaseDate)
-                </td>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Condition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PurchaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Publisher)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserName)
+            </td>
+
+            @if (item.User.UserName == UserManager.GetUserName(User))
+            {
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                 </td>
+            }
+            else
+            {
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            }
             </tr>
         }
     </tbody>
 </table>
+
+

@@ -1,4 +1,5 @@
 ﻿@model ConesOfAmazonshire.Models.BoardGame
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Details";
@@ -14,7 +15,7 @@
             <text>Contact information</text>
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.User.UserName)
+            <a href="mailto:@(Model.User.Email)?subject=I'm%20interested%20in%20buying%20@(Model.Title)!&body=Hello%20Mr.%20@(Model.User.LastName),%0D%0A%0D%0AI%20would%20like%20to%20purchase%20@(Model.Title)%20from%20you.%20When%20can%20we%20meet%20up?%0D%0A%0D%0ASincerely,%0D%0A@(UserManager.GetUserAsync(User).Result.FirstName)%20@(UserManager.GetUserAsync(User).Result.LastName)">Contact for purchase</a>
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Title)
@@ -50,7 +51,10 @@
             @Html.DisplayNameFor(model => model.User.Location)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.User.Location)
+            <text>@(Model.User.Location.ToString())</text>
+            <div class="mapouter">
+                <div class="gmap_canvas"><iframe width="600" height="500" id="gmap_canvas" src="https://maps.google.com/maps?width=100%&height=600&q=@(Model.User.Location.ToString())&ie=UTF8&t=&z=14&iwloc=B&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+            </div>
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Image)
@@ -66,7 +70,20 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+@if (Model.User.UserName == UserManager.GetUserName(User))
+{
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+        <a asp-action="Index"> Back to List</a>
+    </div>
+}
+else
+{
+    <div>
+        <a asp-action="Index"> Back to List</a>
+    </div>
+}
+
+
