@@ -1,5 +1,6 @@
 ﻿@model ConesOfAmazonshire.Models.BoardGame
 @inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Details";
@@ -14,9 +15,18 @@
         <dt>
             <text>Contact information</text>
         </dt>
-        <dd>
-            <a href="mailto:@(Model.User.Email)?subject=I'm interested in buying @(Model.Title)!&body=Hello Mr. @(Model.User.LastName),%0D%0A%0D%0AI would like to purchase @(Model.Title) from you.%0D%0AWhen can we meet up?%0D%0A%0D%0ASincerely,%0D%0A@(UserManager.GetUserAsync(User).Result.FirstName) @(UserManager.GetUserAsync(User).Result.LastName)" target="_blank">Contact for purchase</a>
-        </dd>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <dd>
+                <a href="mailto:@(Model.User.Email)?subject=I'm interested in buying @(Model.Title)!&body=Hello Mr. @(Model.User.LastName),%0D%0A%0D%0AI would like to purchase @(Model.Title) from you.%0D%0AWhen can we meet up?%0D%0A%0D%0ASincerely,%0D%0A@(UserManager.GetUserAsync(User).Result.FirstName) @(UserManager.GetUserAsync(User).Result.LastName)" target="_blank">Contact for purchase</a>
+            </dd>
+        }
+        else
+        {
+            <dd>
+                <text>Contact for purchase</text>
+            </dd>
+        }
         <dt>
             @Html.DisplayNameFor(model => model.Title)
         </dt>
@@ -67,6 +77,14 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.PurchaseDate)
+        </dd>
+    </dl>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
         </dd>
     </dl>
 </div>

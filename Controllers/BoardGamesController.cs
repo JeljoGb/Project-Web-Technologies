@@ -10,6 +10,14 @@ using ConesOfAmazonshire.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using System.Net;
+using System.IO;
+using System.Xml.Linq;
+using System.Text;
+using System.Net.Http;
+using System.Security.Cryptography.Xml;
+using System.Net.Http.Headers;
+using System.Xml;
 
 namespace ConesOfAmazonshire.Controllers
 {
@@ -34,7 +42,7 @@ namespace ConesOfAmazonshire.Controllers
             ViewBag.PriceSortParm = sortOrder == "price_asc" ? "price_desc" : "price_asc";
             ViewBag.ConditionSortParm = sortOrder == "condition_asc" ? "condition_desc" : "condition_asc";
             ViewBag.GenreSortParm = sortOrder == "genre_asc" ? "genre_desc" : "genre_asc";
-            ViewBag.PublisherSortParm = sortOrder == "publisher_asc"  ? "publisher_desc" : "publisher_asc";
+            ViewBag.PublisherSortParm = sortOrder == "publisher_asc" ? "publisher_desc" : "publisher_asc";
             ViewBag.UserSortParm = sortOrder == "user_asc" ? "user_desc" : "user_asc";
             ViewBag.LocationSortParm = sortOrder == "location_asc" ? "location_desc" : "location_asc";
             ViewBag.PurchaseSortParm = sortOrder == "purchase_asc" ? "purchase_desc" : "purchase_asc";
@@ -42,7 +50,7 @@ namespace ConesOfAmazonshire.Controllers
             IQueryable<string> genreQuery = from b in _context.BoardGames
                                             orderby b.Genre
                                             select b.Genre;
-            
+
 
             var boardGames = from b in _context.BoardGames
                              .Include(a => a.User)
@@ -138,7 +146,7 @@ namespace ConesOfAmazonshire.Controllers
                 boardGames = await boardGames.ToListAsync(),
                 SearchTitles = searchTitles
             };
-            
+
             return View(boardGameQueryVM);
             //return View(await _context.BoardGames
             //    .Include(a => a.User)
@@ -157,11 +165,53 @@ namespace ConesOfAmazonshire.Controllers
                 .Include(a => a.User)
                 .Include(b => b.User.Location)
                 .SingleOrDefaultAsync(m => m.Id == id);
+
+            
+            string url = "https://www.boardgamegeek.com/xmlapi2/";
+            string searchBoardGameId = "search?query=Monopoly&exact=1";
+            //string url = "http://www.google.com/ig/api?weather=vilnius&hl=lt";
+
+            HttpClient client = new HttpClient
+            {
+                BaseAddress = new Uri(url)
+            };
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+
+            IEnumerable<BoardGame> boardGames = new List<BoardGame>();
+
+            //GET Method  
+            HttpResponseMessage idResponse = client.GetAsync(searchBoardGameId).Result;
+            if (idResponse.IsSuccessStatusCode)
+            {
+
+                XDocument nameQuery = XDocument.Parse(Encoding.UTF8.GetString(idResponse.Content.ReadAsByteArrayAsync().Result));
+                string boardGameId = nameQuery.Descendants("item").First().Attribute("id").Value;
+
+                string searchDescription = "thing?id=" + boardGameId;
+                HttpResponseMessage descriptionResponse = client.GetAsync(searchDescription).Result;
+                if (descriptionResponse.IsSuccessStatusCode)
+                {
+                    XDocument descriptionQuery = XDocument.Parse(Encoding.UTF8.GetString(descriptionResponse.Content.ReadAsByteArrayAsync().Result));
+                    var a = descriptionQuery.Descendants("item");
+                    var b = a.First();
+                    var c = b.Element("description");
+                    string d = c.Value;
+                    boardGame.Description = descriptionQuery.Descendants("item").First().Element("description").Value;
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("Internal server Error");
+            }
+
+
+
             if (boardGame == null)
             {
                 return NotFound();
             }
-
             return View(boardGame);
         }
 

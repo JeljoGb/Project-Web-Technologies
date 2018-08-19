@@ -31,7 +31,7 @@ namespace ConesOfAmazonshire.Models
         [DataType(DataType.Date)]
         public string PurchaseDate { get; set; }
 
-
+        public string Description { get; set; }
         
     }
 }
