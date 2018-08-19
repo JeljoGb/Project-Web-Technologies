@@ -15,7 +15,7 @@
             <text>Contact information</text>
         </dt>
         <dd>
-            <a href="mailto:@(Model.User.Email)?subject=I'm%20interested%20in%20buying%20@(Model.Title)!&body=Hello%20Mr.%20@(Model.User.LastName),%0D%0A%0D%0AI%20would%20like%20to%20purchase%20@(Model.Title)%20from%20you.%20When%20can%20we%20meet%20up?%0D%0A%0D%0ASincerely,%0D%0A@(UserManager.GetUserAsync(User).Result.FirstName)%20@(UserManager.GetUserAsync(User).Result.LastName)">Contact for purchase</a>
+            <a href="mailto:@(Model.User.Email)?subject=I'm interested in buying @(Model.Title)!&body=Hello Mr. @(Model.User.LastName),%0D%0A%0D%0AI would like to purchase @(Model.Title) from you.%0D%0AWhen can we meet up?%0D%0A%0D%0ASincerely,%0D%0A@(UserManager.GetUserAsync(User).Result.FirstName) @(UserManager.GetUserAsync(User).Result.LastName)" target="_blank">Contact for purchase</a>
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Title)

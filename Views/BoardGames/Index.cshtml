@@ -101,7 +101,7 @@
                 @Html.DisplayFor(modelItem => item.Image)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Location)
+                <text>@(item.User.Location.ToString())</text>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User.UserName)

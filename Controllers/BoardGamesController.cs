@@ -46,6 +46,7 @@ namespace ConesOfAmazonshire.Controllers
 
             var boardGames = from b in _context.BoardGames
                              .Include(a => a.User)
+                             .Include(b => b.User.Location)
                              select b;
 
             if (!String.IsNullOrEmpty(searchTitles))
